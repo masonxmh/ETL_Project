@@ -19,5 +19,6 @@ CREATE TABLE beer_profile_table (
 	name VARCHAR ,
 	style VARCHAR,
 	abv float,
-	availability VARCHAR);
+	availability VARCHAR,
+	FOREIGN KEY (id) REFERENCES beer_id_table(id),);
 SELECT * FROM beer_profile_table;
