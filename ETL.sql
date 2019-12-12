@@ -47,7 +47,7 @@ CREATE TABLE review_table (
 	review_aroma FLOAT,
 	review_appearance FLOAT,
 	review_taste FLOAT,
-	review_time timestamp,
+	review_time TIMESTAMP,
 	FOREIGN KEY (id) REFERENCES beer_id_table(id));
 	SELECT * FROM review_table;
 
