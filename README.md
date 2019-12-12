@@ -1,8 +1,8 @@
 # ETL_Project
 
-#### Group members : Arthur Adjamoglian Dennis Irwin Mohan Xing
+#### Group members : Arthur Adjamoglian, Dennis Irwin, Mohan Xing
 
-For this ETL projects we will extract beer data from three .csv files then clean up and transform these data into smaller more manageable tables that makes logical sense and upload to a relational database. 
+For this ETL projects we will extract beer data from three .csv files then clean up and transform these data into smaller more manageable tables that makes logical sense then create several dataframes of US beers and upload to a relational database. 
 
 
 ### Extraction
@@ -145,10 +145,24 @@ review_table = new_review_df[["id","name","beer_style","alchol_by_volume","revie
 |  7 | 52159 | Caldera Ginger Beer | Herbed / Spiced Beer           |                4.7 |              3   |            2.5 |                 3.5 |            3.5 | 2011-05-24 22:26:58 |
 |  8 | 52159 | Caldera Ginger Beer | Herbed / Spiced Beer           |                4.7 |              4   |            3   |                 3.5 |            4   | 2010-11-22 19:35:03 |
 
+#### - For Adjusted Review Table
+
+```python
+```
+|    |    id |   review_overall_adjusted |   review_aroma_adjusted |   review_appearance_adjusted |   review_palate_adjusted |   review_taste_adjusted |
+|---:|------:|--------------------------:|------------------------:|-----------------------------:|-------------------------:|------------------------:|
+|  4 | 64883 |                   3.9469  |                 4.21682 |                      3.83799 |                  3.74715 |                 4.26916 |
+|  5 | 52159 |                   3.16919 |                 3.46479 |                      3.41104 |                  2.8202  |                 3.62027 |
+|  6 | 52159 |                   3.6158  |                 3.814   |                      3.7003  |                  4.10946 |                 4.22771 |
+|  7 | 52159 |                   2.94103 |                 2.40301 |                      3.44265 |                  1.85181 |                 3.38666 |
+|  8 | 52159 |                   3.84707 |                 2.97114 |                      3.44419 |                  3.35335 |                 3.91982 |
+
+
 ### Load
 
-We used relational database, PostgresSQL database.  The primary benefit of the relational database approach is the ability to create meaningful information by joining the tables. Joining tables allows us to understand the relationships between the data, or how the tables connect. storage and created a connection using Jupyter Notebook. We then created a database, pushed and joined the tables using beer id and brewery id as primary keys for joining the CSV files. Then connected to the database using SQLAlchemy and loaded the result. Here we were able to perform multiple queries to suit a desired criterion. 
-
+We used relational database, PostgresSQL database.  The primary benefit of the relational database approach is the ability to create meaningful information by joining the tables. Joining tables allows us to understand the relationships between the data, or how the tables connect. storage and created a connection using Jupyter Notebook. 
+We create several tables in the database based on the transformed dataframes in python using beer id and brewery id as primary keys. Then checked if these tables are in PostgresSQL. Lastly connected to the database using SQLAlchemy and loaded the result. Here we were able to perform multiple queries to suit a desired criterion. 
+The Load steps and codes are shown as below:
 #### -Create Tables in PostgresSQL:
 define primary keys and foreign keys
 ~~~~sql
@@ -192,9 +206,19 @@ CREATE TABLE review_table (
     review_aroma FLOAT,
     review_appearance FLOAT,
     review_taste FLOAT,
-    review_time DATE,
+    review_time timestamp,
     FOREIGN KEY (id) REFERENCES beer_id_table(id));
-
+    
+-- Create Adjusted Beer Review Table------------------------
+DROP TABLE IF EXISTS adjusted_table;
+CREATE TABLE adjusted_table (
+    id INT NOT NULL,
+    review_overall_adjusted	FLOAT,
+    review_aroma_adjusted FLOAT,
+    review_appearance_adjusted FLOAT,
+    review_palate_adjusted	FLOAT,
+    review_taste_adjusted FLOAT,
+    FOREIGN KEY (id) REFERENCES beer_id_table(id));
 ~~~~
 #### -Check Tables in Jupyter Notebook:
 ```python
@@ -207,6 +231,7 @@ brewery_id_table.to_sql(name='brewery_id_table', con=engine, if_exists='append',
 beer_profile_table.to_sql(name='beer_profile_table', con=engine, if_exists='append', index=False)
 brewery_location_table.to_sql(name='brewery_location_table', con=engine, if_exists='append', index=False)
 review_table.to_sql(name='review_table', con=engine, if_exists='append', index=False)
+adjusted_table.to_sql(name='adjusted_table', con=engine, if_exists='append', index=False)
 ```
 #### -Confirm Data is Loaded
 ```python
@@ -215,4 +240,5 @@ pd.read_sql_query('select * from brewery_id_table', con=engine).head()
 pd.read_sql_query('select * from beer_profile_table', con=engine).head()
 pd.read_sql_query('SELECT * FROM brewery_location_table', con=engine).head()
 pd.read_sql_query('SELECT * FROM review_table', con=engine).head()
+pd.read_sql_query('SELECT * FROM adjusted_table', con=engine).head()
 ```
